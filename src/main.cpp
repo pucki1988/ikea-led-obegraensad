@@ -15,6 +15,7 @@
 #endif
 
 #include "PluginManager.h"
+#include "BluetoothSerial.h"
 
 #include "plugins/BreakoutPlugin.h"
 #include "plugins/CirclePlugin.h"
@@ -53,6 +54,10 @@ WiFiManager wifiManager;
 
 unsigned long lastConnectionAttempt = 0;
 const unsigned long connectionInterval = 10000;
+
+// Erstelle eine BluetoothSerial Instanz
+BluetoothSerial SerialBT;
+const char* remoteDeviceName = "DeinGeraetName"; // Der Name des gepairten Geräts
 
 void connectToWiFi()
 {
@@ -118,6 +123,13 @@ void setup()
   pinMode(PIN_ENABLE, OUTPUT);
   pinMode(PIN_BUTTON, INPUT_PULLUP);
 
+
+  if (!SerialBT.begin("IKEA K9 BT")) {   // Startet Bluetooth mit einem Gerätenamen
+        Serial.println("Bluetooth konnte nicht gestartet werden");
+        return;
+    }
+    Serial.println("Bluetooth ist bereit")
+
 // server
 #ifdef ENABLE_SERVER
   connectToWiFi();
@@ -167,6 +179,13 @@ void loop()
     Serial.println("Lost connection to Wi-Fi. Reconnecting...");
     connectToWiFi();
   }
+
+  if (SerialBT.connected()) {  // Prüft, ob ein Gerät verbunden ist
+        Serial.println("Gepairtes Gerät ist in Reichweite");
+    } else {
+        Serial.println("Gepairtes Gerät ist nicht in Reichweite");
+    }
+    //delay(2000); // Überprüfung alle 2 Sekunden
 
 #ifdef ENABLE_SERVER
   cleanUpClients();
