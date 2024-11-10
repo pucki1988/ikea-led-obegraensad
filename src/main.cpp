@@ -15,7 +15,7 @@
 #endif
 
 #include "PluginManager.h"
-#include "BluetoothSerial.h"
+
 
 #include "plugins/BreakoutPlugin.h"
 #include "plugins/CirclePlugin.h"
@@ -55,9 +55,9 @@ WiFiManager wifiManager;
 unsigned long lastConnectionAttempt = 0;
 const unsigned long connectionInterval = 10000;
 
-// Erstelle eine BluetoothSerial Instanz
-BluetoothSerial SerialBT;
-const char* remoteDeviceName = "DeinGeraetName"; // Der Name des gepairten Geräts
+
+const char* fritzUser = "andi";
+const char* fritzPassword = "schalke04";
 
 void connectToWiFi()
 {
@@ -113,6 +113,67 @@ void connectToWiFi()
   lastConnectionAttempt = millis();
 }
 
+String authenticate() {
+  HTTPClient http;
+  http.begin("http://fritz.box/login_sid.lua");
+  int httpCode = http.GET();
+  
+  if (httpCode == HTTP_CODE_OK) {
+    
+    String response = http.getString();
+    int challengeStart = response.indexOf("<Challenge>") + 11;
+    int challengeEnd = response.indexOf("</Challenge>");
+    String challenge = response.substring(challengeStart, challengeEnd);
+    Serial.println("Challenge: " + challenge);
+
+    // Berechnung des Antwort-Hashes
+  String combined = challenge + "-" + fritzPassword;
+  MD5Builder md5;
+  md5.begin();
+  md5.add(combined);
+  md5.calculate();
+  String responseHash = md5.toString();
+
+  // Anfrage mit Challenge und Hash zur Authentifizierung
+  String loginURL = "http://fritz.box/login_sid.lua";
+  http.begin(loginURL);
+  httpCode = http.POST("username=" + String(fritzUser) + "&response=" + challenge + "-" + responseHash);
+  if (httpCode != HTTP_CODE_OK) {
+    Serial.println("Fehler bei der Authentifizierung");
+    return "";
+  }
+
+  // Session-ID extrahieren
+  response = http.getString();
+  int sidStart = response.indexOf("<SID>") + 5;
+  int sidEnd = response.indexOf("</SID>");
+  String sessionID = response.substring(sidStart, sidEnd);
+  Serial.println("Session ID: " + sessionID);
+
+  return sessionID;
+  }
+  return "";
+}
+
+void scanNetworkDevices() {
+  String sessionID = authenticate();
+  if (sessionID != "" && sessionID != "0000000000000000") {
+    HTTPClient http;
+    http.begin("http://fritz.box/query.lua?sid=" + sessionID + "&network=devicelist");
+    int httpCode = http.GET();
+
+    if (httpCode == HTTP_CODE_OK) {
+      String deviceList = http.getString();
+      if (deviceList.indexOf("24:95:2f:d6:a3:da") >= 0) {
+        Serial.println("Zielgerät ist im Netzwerk verbunden!");
+      } else {
+        Serial.println("Zielgerät nicht gefunden.");
+      }
+    }
+  }
+    
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -122,13 +183,6 @@ void setup()
   pinMode(PIN_DATA, OUTPUT);
   pinMode(PIN_ENABLE, OUTPUT);
   pinMode(PIN_BUTTON, INPUT_PULLUP);
-
-
-  if (!SerialBT.begin("IKEA K9 BT")) {   // Startet Bluetooth mit einem Gerätenamen
-        Serial.println("Bluetooth konnte nicht gestartet werden");
-        return;
-    }
-    Serial.println("Bluetooth ist bereit")
 
 // server
 #ifdef ENABLE_SERVER
@@ -180,15 +234,9 @@ void loop()
     connectToWiFi();
   }
 
-  if (SerialBT.connected()) {  // Prüft, ob ein Gerät verbunden ist
-        Serial.println("Gepairtes Gerät ist in Reichweite");
-    } else {
-        Serial.println("Gepairtes Gerät ist nicht in Reichweite");
-    }
-    //delay(2000); // Überprüfung alle 2 Sekunden
-
 #ifdef ENABLE_SERVER
   cleanUpClients();
 #endif
-  delay(1);
+ //scanNetworkDevices();
+  delay(10);
 }
