@@ -16,7 +16,7 @@ import hashlib
 Import('env')
 
 username = "admin"
-password = "ikea-led-wall"
+password = "ikea-uhr"
 
 try:
     from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
