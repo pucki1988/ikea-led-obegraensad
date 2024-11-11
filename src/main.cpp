@@ -225,7 +225,7 @@ void loop()
 {
 
   Messages.scrollMessageEveryMinute();
-
+  Screen.checkDimMode();
   pluginManager.runActivePlugin();
 
   if (WiFi.status() != WL_CONNECTED && millis() - lastConnectionAttempt > connectionInterval)

@@ -41,6 +41,13 @@
 // name of WiFi created by the device if no known WiFi is available
 #define WIFI_MANAGER_SSID "Ikea Display Setup WiFi"
 
+#define SCREEN_DIM_HOUR "22"
+#define SCREEN_DIM_MINUTE "30"
+#define SCREEN_LIGHT_HOUR "06"
+#define SCREEN_LIGHT_MINUTE "30"
+#define SCREEN_DEFAULT_BRIGHTNESS 65
+
+
 // use ALL of the following to use static IP config
 /*
 #define IP_ADDRESS "192.168.0.250"

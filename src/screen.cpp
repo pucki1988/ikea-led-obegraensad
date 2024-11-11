@@ -4,6 +4,14 @@
 #define TIMER_INTERVAL_US 200
 #define GRAY_LEVELS 64 // must be a power of two
 
+const int dimHour = stoi(SCREEN_DIM_HOUR);
+const int dimMinute = stoi(SCREEN_DIM_MINUTE);
+
+const int lightHour = stoi(SCREEN_LIGHT_HOUR);
+const int lightMinute = stoi(SCREEN_LIGHT_MINUTE);
+
+const int defaultBrightness = SCREEN_DEFAULT_BRIGHTNESS;
+
 using namespace std;
 
 bool Screen_::isCacheEmpty()
@@ -150,6 +158,7 @@ void Screen_::setup()
   timerAttachInterrupt(Screen_timer, &onScreenTimer, true);
   timerAlarmWrite(Screen_timer, TIMER_INTERVAL_US, true);
   timerAlarmEnable(Screen_timer);
+  previousMinute = -1;
 #endif
 }
 
@@ -287,6 +296,34 @@ void Screen_::setBrightness(uint8_t brightness)
   analogWrite(PIN_ENABLE, 255 - brightness);
 #endif
 }
+
+
+void Screen_::checkDimMode()
+{
+    struct tm timeinfo;
+
+    // Check if the local time can be obtained
+    if (getLocalTime(&timeinfo))
+    {
+
+      if(timeinfo.tm_min != previousMinute)
+      {
+        //Check if is betwenn DIM and LIGHT Time 
+        if(timeinfo.tm_hour >= lightHour && timeinfo.tm_min >= lightMinute && Screen.getCurrentBrightness() == 0 && timeinfo.tm_hour < dimHour && timeinfo.tm_min < dimMinute){
+          Screen.setBrightness(defaultBrightness);
+        }else{
+          if(Screen.getCurrentBrightness() != 0){
+            Screen.setBrightness(0);
+          }
+          
+        }
+        previousMinute = timeinfo.tm_min;
+      }
+
+    }
+
+}
+
 
 void Screen_::drawBigNumbers(int x, int y, std::vector<int> numbers, uint8_t brightness)
 {

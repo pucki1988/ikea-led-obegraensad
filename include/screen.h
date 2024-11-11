@@ -6,6 +6,8 @@
 #include "signs.h"
 #include "constants.h"
 #include "storage.h"
+#include "secrets.h"
+
 class Screen_
 {
 private:
@@ -13,6 +15,7 @@ private:
   int findPosition(uint8_t count);
   void rotate();
   uint8_t brightness = 255;
+  int previousMinute;
   uint8_t renderBuffer_[ROWS * COLS];
   uint8_t rotatedRenderBuffer_[ROWS * COLS];
   uint8_t cache[ROWS * COLS];
@@ -61,6 +64,7 @@ public:
   void persist();
   void cacheCurrent();
   void restoreCache();
+  void checkDimMode();
   uint8_t getBufferIndex(int index);
 
   void drawLine(int x1, int y1, int x2, int y2, int ledStatus, uint8_t brightness = 255);
