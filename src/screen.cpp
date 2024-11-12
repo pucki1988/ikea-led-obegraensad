@@ -4,11 +4,11 @@
 #define TIMER_INTERVAL_US 200
 #define GRAY_LEVELS 64 // must be a power of two
 
-const int dimHour = stoi(SCREEN_DIM_HOUR);
-const int dimMinute = stoi(SCREEN_DIM_MINUTE);
+const int dimHour = std::stoi(SCREEN_DIM_HOUR);
+const int dimMinute = std::stoi(SCREEN_DIM_MINUTE);
 
-const int lightHour = stoi(SCREEN_LIGHT_HOUR);
-const int lightMinute = stoi(SCREEN_LIGHT_MINUTE);
+const int lightHour = std::stoi(SCREEN_LIGHT_HOUR);
+const int lightMinute = std::stoi(SCREEN_LIGHT_MINUTE);
 
 const int defaultBrightness = SCREEN_DEFAULT_BRIGHTNESS;
 
@@ -309,8 +309,11 @@ void Screen_::checkDimMode()
       if(timeinfo.tm_min != previousMinute)
       {
         //Check if is betwenn DIM and LIGHT Time 
-        if(timeinfo.tm_hour >= lightHour && timeinfo.tm_min >= lightMinute && Screen.getCurrentBrightness() == 0 && timeinfo.tm_hour < dimHour && timeinfo.tm_min < dimMinute){
-          Screen.setBrightness(defaultBrightness);
+        if(timeinfo.tm_hour >= lightHour && timeinfo.tm_hour < dimHour){
+          if(Screen.getCurrentBrightness() == 0){
+              Screen.setBrightness(defaultBrightness);
+          }
+          
         }else{
           if(Screen.getCurrentBrightness() != 0){
             Screen.setBrightness(0);
