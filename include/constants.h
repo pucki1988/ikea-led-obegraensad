@@ -46,7 +46,8 @@
 #define SCREEN_LIGHT_HOUR "06"
 #define SCREEN_LIGHT_MINUTE "30"
 #define SCREEN_DEFAULT_BRIGHTNESS 65
-
+#define SCREEN_DIM_MODE 1
+#define SCREEN_PARTY_MODE 1
 
 // use ALL of the following to use static IP config
 /*

@@ -276,10 +276,10 @@ std::vector<int> Screen_::readBytes(std::vector<int> bytes)
 
 void Screen_::drawNumbers(int x, int y, std::vector<int> numbers, uint8_t brightness)
 {
-  for (int i = 0; i < numbers.size(); i++)
-  {
-    this->drawCharacter(x + (i * 5), y, this->readBytes(smallNumbers[numbers.at(i)]), 4, brightness);
-  }
+        for (int i = 0; i < numbers.size(); i++)
+        {
+          this->drawCharacter(x + (i * 5), y, this->readBytes(smallNumbers[numbers.at(i)]), 4, this->getCurrentBrightness());
+        }
 }
 
 uint8_t Screen_::getCurrentBrightness() const
@@ -330,10 +330,10 @@ void Screen_::checkDimMode()
 
 void Screen_::drawBigNumbers(int x, int y, std::vector<int> numbers, uint8_t brightness)
 {
-  for (int i = 0; i < numbers.size(); i++)
-  {
-    this->drawCharacter(x + (i * 8), y, this->readBytes(bigNumbers[numbers.at(i)]), 8, brightness);
-  }
+        for (int i = 0; i < numbers.size(); i++)
+        {
+          this->drawCharacter(x + (i * 8), y, this->readBytes(bigNumbers[numbers.at(i)]), 8, this->getCurrentBrightness());
+        }
 }
 
 void Screen_::drawWeather(int x, int y, int weather, uint8_t brightness)
