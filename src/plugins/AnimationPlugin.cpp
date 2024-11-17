@@ -1,5 +1,7 @@
 #include "plugins/AnimationPlugin.h"
 
+const bool partyMode = SCREEN_PARTY_MODE;
+
 void AnimationPlugin::setup()
 {
     this->step = 0;
@@ -41,6 +43,9 @@ void AnimationPlugin::loop()
         if (this->step >= size)
         {
             this->step = 0;
+        }
+        if(partyMode){
+            delay(30000);
         }
         delay(400);
     }

@@ -56,7 +56,7 @@ unsigned long lastConnectionAttempt = 0;
 const unsigned long connectionInterval = 10000;
 
 const bool dimMode = SCREEN_DIM_MODE;
-const bool partyMode = SCREEN_PARTY_MODE;
+
 
 const char* fritzUser = "andi";
 const char* fritzPassword = "schalke04";
@@ -243,8 +243,6 @@ void loop()
   cleanUpClients();
 #endif
  //scanNetworkDevices();
- if(partyMode){
-  delay(30000);
- }
+ 
   delay(10);
 }
